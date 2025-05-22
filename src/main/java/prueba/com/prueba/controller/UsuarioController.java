@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import prueba.com.prueba.dto.UsuarioDTO;
 import prueba.com.prueba.dto.UsuarioDTOConverter;
+import prueba.com.prueba.dto.VentaDTO;
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.repository.UsuarioRepository;
 import prueba.com.prueba.service.UsuarioService;
+import prueba.com.prueba.service.VentaClientService;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioDTOConverter usuarioDTOConverter;
     private final UsuarioRepository usuarioRepository;
+    private final VentaClientService ventaClientService;
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @GetMapping("/status")
@@ -46,6 +49,7 @@ public class UsuarioController {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+                
     }
 
     @PostMapping
@@ -71,5 +75,14 @@ public class UsuarioController {
         }
         usuarioRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/ventas")
+    public ResponseEntity<List<VentaDTO>> getVentasPorUsuario(@PathVariable Long id) {
+        List<VentaDTO> ventas = ventaClientService.getVentasPorUsuario(id);
+        if (ventas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(ventas);
     }
 }
