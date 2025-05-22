@@ -25,7 +25,7 @@ public class UsuarioController {
 
     @GetMapping("/status")
     public ResponseEntity<String> getStatus() {
-        return ResponseEntity.ok("Usuario service is running");
+        return ResponseEntity.ok("Usuario corriendo OK :)");
     }
 
     @GetMapping
