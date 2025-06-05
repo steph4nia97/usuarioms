@@ -41,6 +41,9 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+			<groupId>net.datafaker</groupId>
+    		<artifactId>datafaker</artifactId>
+   			<version>2.4.2</version>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
