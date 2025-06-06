@@ -36,5 +36,100 @@ public class UsuarioServiceTest {
         //Then
         assertEquals(usuarios, resultado);
     }
+    @Test
+    void Guardar_deberiaGuardarUsuario(){
+        // Given
+        Usuario usuario = new Usuario();
+        when(usuarioRepository.save(usuario)).thenReturn(usuario);
+
+        // When
+        Usuario resultado = service.saveUsuario(usuario);
+
+        // Then
+        assertEquals(usuario, resultado);
+    }
+    @Test
+    void Actualizar_deberiaActualizarUsuario(){
+        // Given
+        Long id = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setId(id);
+        when(usuarioRepository.existsById(id)).thenReturn(true);
+        when(usuarioRepository.save(usuario)).thenReturn(usuario);
+
+        // When
+        Usuario resultado = service.updateUsuario(id, usuario);
+
+        // Then
+        assertEquals(usuario, resultado);
+    
+    }
+    
+    @Test
+    void Eliminar_deberiaEliminarUsuario(){
+        // Given
+        Long id = 1L;
+        when(usuarioRepository.existsById(id)).thenReturn(true);
+
+        // When
+        boolean resultado = service.deleteUsuario(id);
+
+        // Then
+        assertEquals(true, resultado);
+    }
+    @Test
+    void ObtenerPorId_deberiaRetornarUsuarioPorId(){
+        // Given
+        Long id = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setId(id);
+        when(usuarioRepository.findById(id)).thenReturn(java.util.Optional.of(usuario));
+
+        // When
+        java.util.Optional<Usuario> resultado = service.getUsuarioById(id);
+
+        // Then
+        assertEquals(java.util.Optional.of(usuario), resultado);
+    }
+    
+    @Test
+    void ObtenerPorId_deberiaRetornarVacioSiNoExisteUsuario(){
+        // Given
+        Long id = 1L;
+        when(usuarioRepository.findById(id)).thenReturn(java.util.Optional.empty());
+
+        // When
+        java.util.Optional<Usuario> resultado = service.getUsuarioById(id);
+
+        // Then
+        assertEquals(java.util.Optional.empty(), resultado);
+    }
+    
+    @Test
+    void Actualizar_deberiaRetornarNullSiNoExisteUsuario(){
+        // Given
+        Long id = 1L;
+        Usuario usuario = new Usuario();
+        when(usuarioRepository.existsById(id)).thenReturn(false);
+
+        // When
+        Usuario resultado = service.updateUsuario(id, usuario);
+
+        // Then
+        assertEquals(null, resultado);
+    }
+    @Test
+    void Eliminar_deberiaRetornarFalseSiNoExisteUsuario(){
+        // Given
+        Long id = 1L;
+        when(usuarioRepository.existsById(id)).thenReturn(false);
+
+        // When
+        boolean resultado = service.deleteUsuario(id);
+
+        // Then
+        assertEquals(false, resultado);
+    }
+    
 
 }
