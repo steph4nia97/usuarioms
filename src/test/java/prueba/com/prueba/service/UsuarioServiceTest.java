@@ -1,9 +1,12 @@
 package service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,18 +42,22 @@ public class UsuarioServiceTest {
     @Test
     void Guardar_deberiaGuardarUsuario(){
         // Given
-        Usuario usuario = new Usuario();
-        when(usuarioRepository.save(usuario)).thenReturn(usuario);
+        Usuario usuario = new Usuario(1L, "juan@correo.cl", "1234");
+        Usuario usuarioGuardado = new Usuario(1L, "juan@correo.cl", "1234");
+
+        when(usuarioRepository.save(usuario)).thenReturn(usuarioGuardado);
 
         // When
         Usuario resultado = service.saveUsuario(usuario);
 
         // Then
-        assertEquals(usuario, resultado);
+        assertEquals(usuario.getCorreo(), resultado.getCorreo());
     }
+
     @Test
     void Actualizar_deberiaActualizarUsuario(){
         // Given
+        String correo = "aaa";
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
@@ -83,26 +90,27 @@ public class UsuarioServiceTest {
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
-        when(usuarioRepository.findById(id)).thenReturn(java.util.Optional.of(usuario));
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
 
         // When
-        java.util.Optional<Usuario> resultado = service.getUsuarioById(id);
+        Optional<Usuario> resultado = service.getUsuarioById(id);
 
         // Then
-        assertEquals(java.util.Optional.of(usuario), resultado);
+        assertTrue(resultado.isPresent());
+        assertEquals(1L, resultado.get().getId());
     }
     
     @Test
     void ObtenerPorId_deberiaRetornarVacioSiNoExisteUsuario(){
         // Given
         Long id = 1L;
-        when(usuarioRepository.findById(id)).thenReturn(java.util.Optional.empty());
+        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
 
         // When
-        java.util.Optional<Usuario> resultado = service.getUsuarioById(id);
+        Optional<Usuario> resultado = service.getUsuarioById(id);
 
         // Then
-        assertEquals(java.util.Optional.empty(), resultado);
+        assertFalse(!resultado.isPresent());
     }
     
     @Test

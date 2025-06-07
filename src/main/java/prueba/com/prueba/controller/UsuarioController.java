@@ -55,7 +55,7 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
         Usuario createdUsuario = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(createdUsuario);
+        return ResponseEntity.status(201).body(createdUsuario);
     }
 
     @PutMapping("/{id}")
@@ -65,7 +65,7 @@ public class UsuarioController {
         }
         usuario.setId(id);
         Usuario updatedUsuario = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(updatedUsuario);
+        return ResponseEntity.accepted().body(updatedUsuario);
     }
 
     @DeleteMapping("/{id}")

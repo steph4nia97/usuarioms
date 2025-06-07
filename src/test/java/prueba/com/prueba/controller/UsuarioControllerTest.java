@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +24,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import prueba.com.prueba.controller.UsuarioController;
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
 
 @WebMvcTest(UsuarioController.class)
-
 public class UsuarioControllerTest {
  @Autowired private MockMvc mockMvc;
 
@@ -57,11 +58,12 @@ void guardar_deberiaGuardarUsuario() throws Exception {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\"}"))
             .andExpect(status().isOk());
-
-    verify(usuarioService, times(1)).saveUsuario(any(Usuario.class));
-}
-@Test
-void actualizar_deberiaActualizarUsuario() throws Exception {
+         // Verifica que el servicio fue llamado una vez con cualquier objeto Usuario
+        // y que se guardó correctamente
+            verify(usuarioService, times(1)).saveUsuario(any(Usuario.class));
+    }
+    @Test
+    void actualizar_deberiaActualizarUsuario() throws Exception {
     // Given
     Long id = 1L;
     Usuario usuario = new Usuario();
@@ -104,7 +106,7 @@ void eliminar_deberiaEliminarUsuario() throws Exception {
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
-        when(usuarioService.getUsuarioById(id)).thenReturn(usuario);
+        when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuario));
 
         mockMvc.perform(get("/usuarios/{id}", id))
                 .andExpect(status().isOk())
