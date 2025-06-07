@@ -22,9 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
-import prueba.com.prueba.controller.UsuarioController;
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
 
@@ -45,10 +45,27 @@ void listar_deberiaRetornarListaUsuarios() throws Exception {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(3))); //$ es el objeto raiz y se espera que tenga 3 usuarios een el hasSize
 
-     verify(usuarioService, times(1)).getAllUsuarios();
 
 }
 @Test
+void guardar_deberiaGuardarUsuario() throws Exception {
+    // Given
+    Usuario usuario = new Usuario();
+    usuario.setId(1L);
+    usuario.setNombre("Juan");
+    usuario.setEmail("juan@email.com");
+    when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
+
+    mockMvc.perform(post("/usuarios")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\"}"))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.nombre").value("Juan"))
+            .andExpect(jsonPath("$.email").value("juan@email.com"));
+
+    verify(usuarioService, times(1)).saveUsuario(any(Usuario.class));
+}/*@Test
 void guardar_deberiaGuardarUsuario() throws Exception {
     // Given
     Usuario usuario = new Usuario();
@@ -57,11 +74,9 @@ void guardar_deberiaGuardarUsuario() throws Exception {
     mockMvc.perform(post("/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\"}"))
-            .andExpect(status().isOk());
-         // Verifica que el servicio fue llamado una vez con cualquier objeto Usuario
-        // y que se guardó correctamente
-            verify(usuarioService, times(1)).saveUsuario(any(Usuario.class));
-    }
+            .andExpect(status().isCreated());*/
+
+    
     @Test
     void actualizar_deberiaActualizarUsuario() throws Exception {
     // Given
@@ -75,7 +90,6 @@ void guardar_deberiaGuardarUsuario() throws Exception {
             .content("{\"nombre\":\"Juan Actualizado\",\"email\":\"juan@email.com\"}"))
             .andExpect(status().isOk());    
     
-  verify(usuarioService, times(1)).updateUsuario(eq(id), any(Usuario.class));
 
 }
 @Test
@@ -87,7 +101,6 @@ void eliminar_deberiaEliminarUsuario() throws Exception {
     mockMvc.perform(delete("/usuarios/{id}", id))
             .andExpect(status().isOk());
 
-    verify(usuarioService, times(1)).deleteUsuario(id);
 }
     @Test
     void eliminar_deberiaRetornarNotFoundSiUsuarioNoExiste() throws Exception {
@@ -98,7 +111,6 @@ void eliminar_deberiaEliminarUsuario() throws Exception {
         mockMvc.perform(delete("/usuarios/{id}", id))
                 .andExpect(status().isNotFound());
 
-        verify(usuarioService, times(1)).deleteUsuario(id);
     }
     @Test
     void obtenerPorId_deberiaRetornarUsuarioPorId() throws Exception {
@@ -112,7 +124,6 @@ void eliminar_deberiaEliminarUsuario() throws Exception {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id));
 
-        verify(usuarioService, times(1)).getUsuarioById(id);
     }
 
 

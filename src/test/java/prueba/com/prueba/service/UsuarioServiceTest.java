@@ -1,4 +1,4 @@
-package service;
+package prueba.com.prueba.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
