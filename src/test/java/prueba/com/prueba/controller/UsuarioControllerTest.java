@@ -24,6 +24,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
@@ -53,19 +54,20 @@ void guardar_deberiaGuardarUsuario() throws Exception {
     Usuario usuario = new Usuario();
     usuario.setId(1L);
     usuario.setNombre("Juan");
-    usuario.setEmail("juan@email.com");
+    usuario.setCorreo("juan@email.com");
+    usuario.setPassword("123");
     when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
     mockMvc.perform(post("/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\"}"))
+            .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\",\"password\":\"123\"}"))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.nombre").value("Juan"))
-            .andExpect(jsonPath("$.email").value("juan@email.com"));
-
-    verify(usuarioService, times(1)).saveUsuario(any(Usuario.class));
-}/*@Test
+            .andExpect(jsonPath("$.email").value("juan@email.com"))
+            .andExpect(jsonPath("$.password").value("123"));
+        }
+/*@Test
 void guardar_deberiaGuardarUsuario() throws Exception {
     // Given
     Usuario usuario = new Usuario();
@@ -77,6 +79,10 @@ void guardar_deberiaGuardarUsuario() throws Exception {
             .andExpect(status().isCreated());*/
 
     
+    private void andExpect(ResultMatcher value) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'andExpect'");
+}
     @Test
     void actualizar_deberiaActualizarUsuario() throws Exception {
     // Given

@@ -27,5 +27,10 @@ public class Usuario {
 
     @Column (name = "password", nullable = false)
     private String password;
+
+    public void setNombre(String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setNombre'");
+    }
 }
 
