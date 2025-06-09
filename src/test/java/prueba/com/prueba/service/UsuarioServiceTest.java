@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.repository.UsuarioRepository;
-import prueba.com.prueba.service.UsuarioService;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioServiceTest {
