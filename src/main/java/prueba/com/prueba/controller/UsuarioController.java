@@ -43,37 +43,36 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-    @GetMapping("/{id}")
+        @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         logger.info("Fetching usuario with id: {}", id);
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-                
     }
 
     @PostMapping
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
-        Usuario createdUsuario = usuarioRepository.save(usuario);
+        Usuario createdUsuario = usuarioService.saveUsuario(usuario);
         return ResponseEntity.status(201).body(createdUsuario);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        if (!usuarioRepository.existsById(id)) {
+        if (!usuarioService.getUsuarioById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
         usuario.setId(id);
-        Usuario updatedUsuario = usuarioRepository.save(usuario);
+        Usuario updatedUsuario = usuarioService.saveUsuario(usuario);
         return ResponseEntity.accepted().body(updatedUsuario);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-        if (!usuarioRepository.existsById(id)) {
+        if (!usuarioService.getUsuarioById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        usuarioRepository.deleteById(id);
+        usuarioService.deleteUsuario(id);
         return ResponseEntity.noContent().build();
     }
 
