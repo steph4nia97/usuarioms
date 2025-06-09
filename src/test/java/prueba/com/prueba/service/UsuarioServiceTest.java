@@ -55,8 +55,6 @@ public class UsuarioServiceTest {
 
     @Test
     void Actualizar_deberiaActualizarUsuario(){
-        // Given
-        String correo = "aaa";
         Long id = 1L;
         Usuario usuario = new Usuario();
         usuario.setId(id);
@@ -109,7 +107,7 @@ public class UsuarioServiceTest {
         Optional<Usuario> resultado = service.getUsuarioById(id);
 
         // Then
-        assertFalse(!resultado.isPresent());
+        assertFalse(resultado.isPresent());
     }
     
     @Test

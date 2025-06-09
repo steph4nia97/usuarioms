@@ -22,13 +22,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import prueba.com.prueba.dto.UsuarioDTOConverter;
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
+
 
 @WebMvcTest(UsuarioController.class)
 public class UsuarioControllerTest {
  @Autowired private MockMvc mockMvc;
 
+@MockBean private UsuarioDTOConverter usuarioDTOConverter;
 @MockBean private UsuarioService usuarioService;
 
 @Test 
