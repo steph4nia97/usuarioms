@@ -4,8 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
@@ -53,18 +49,16 @@ void guardar_deberiaGuardarUsuario() throws Exception {
     // Given
     Usuario usuario = new Usuario();
     usuario.setId(1L);
-    usuario.setNombre("Juan");
     usuario.setCorreo("juan@email.com");
     usuario.setPassword("123");
     when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
     mockMvc.perform(post("/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\",\"password\":\"123\"}"))
+            .content("{\"id\":\"1L\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
-            .andExpect(jsonPath("$.nombre").value("Juan"))
-            .andExpect(jsonPath("$.email").value("juan@email.com"))
+            .andExpect(jsonPath("$.correo").value("juan@email.com"))
             .andExpect(jsonPath("$.password").value("123"));
         }
 /*@Test
@@ -79,25 +73,50 @@ void guardar_deberiaGuardarUsuario() throws Exception {
             .andExpect(status().isCreated());*/
 
     
-    private void andExpect(ResultMatcher value) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'andExpect'");
-}
+
+
+    
     @Test
     void actualizar_deberiaActualizarUsuario() throws Exception {
+        // Given
+        Long id = 1L;
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setId(id);
+        usuarioExistente.setCorreo("viejo@email.com");
+        usuarioExistente.setPassword("antigua");
+    
+        // Usuario actualizado (lo que retorna el servicio)
+        Usuario usuarioActualizado = new Usuario();
+        usuarioActualizado.setId(id);
+        usuarioActualizado.setCorreo("nuevo@email.com");
+        usuarioActualizado.setPassword("nueva");
+    
+        when(usuarioService.updateUsuario(eq(id), any(Usuario.class))).thenReturn(usuarioActualizado);
+    
+        mockMvc.perform(put("/usuarios/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":1,\"correo\":\"nuevo@email.com\",\"password\":\"nueva\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.correo").value("nuevo@email.com"))
+                .andExpect(jsonPath("$.password").value("nueva"));
+    }
+    
+    /*void actualizar_deberiaActualizarUsuario() throws Exception {
     // Given
     Long id = 1L;
-    Usuario usuario = new Usuario();
+    Usuario usuario = new Usuario(); 
     usuario.setId(id);
     when(usuarioService.updateUsuario(eq(id), any(Usuario.class))).thenReturn(usuario);
 
     mockMvc.perform(put("/usuarios/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nombre\":\"Juan Actualizado\",\"email\":\"juan@email.com\"}"))
+            .content("{\"id\":\"1L\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
             .andExpect(status().isOk());    
     
 
-}
+}*/
+
 @Test
 void eliminar_deberiaEliminarUsuario() throws Exception {
     // Given

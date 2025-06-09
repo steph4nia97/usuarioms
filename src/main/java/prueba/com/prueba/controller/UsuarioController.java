@@ -22,7 +22,6 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final UsuarioDTOConverter usuarioDTOConverter;
-    private final UsuarioRepository usuarioRepository;
     private final VentaClientService ventaClientService;
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
@@ -43,7 +42,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-        @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         logger.info("Fetching usuario with id: {}", id);
         Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
