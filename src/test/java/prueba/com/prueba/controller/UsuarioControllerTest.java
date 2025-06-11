@@ -2,7 +2,6 @@ package prueba.com.prueba.controller;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -21,16 +20,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import prueba.com.prueba.dto.UsuarioDTOConverter;
 import prueba.com.prueba.model.Usuario;
 import prueba.com.prueba.service.UsuarioService;
+import prueba.com.prueba.service.VentaClientService;
+
 
 
 @WebMvcTest(UsuarioController.class)
 public class UsuarioControllerTest {
- @Autowired private MockMvc mockMvc;
 
+@MockBean private VentaClientService ventaClientService;
+@Autowired private MockMvc mockMvc;
 @MockBean private UsuarioDTOConverter usuarioDTOConverter;
 @MockBean private UsuarioService usuarioService;
 
@@ -41,12 +42,12 @@ void listar_deberiaRetornarListaUsuarios() throws Exception {
     when(usuarioService.getAllUsuarios()).thenReturn(usuarios);
 
 
-    mockMvc.perform(get("/usuarios"))
+    mockMvc.perform(get("/api/v1/usuarios"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(3))); //$ es el objeto raiz y se espera que tenga 3 usuarios een el hasSize
 
-
 }
+
 @Test
 void guardar_deberiaGuardarUsuario() throws Exception {
     // Given
@@ -56,31 +57,19 @@ void guardar_deberiaGuardarUsuario() throws Exception {
     usuario.setPassword("123");
     when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
-    mockMvc.perform(post("/usuarios")
+    mockMvc.perform(post("/api/v1/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"id\":\"1L\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
+            .content("{\"id\":\"1\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.correo").value("juan@email.com"))
             .andExpect(jsonPath("$.password").value("123"));
-        }
-/*@Test
-void guardar_deberiaGuardarUsuario() throws Exception {
-    // Given
-    Usuario usuario = new Usuario();
-    when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
-
-    mockMvc.perform(post("/usuarios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"nombre\":\"Juan\",\"email\":\"juan@email.com\"}"))
-            .andExpect(status().isCreated());*/
-
-    
+    }
 
 
     
-    @Test
-    void actualizar_deberiaActualizarUsuario() throws Exception {
+@Test
+void actualizar_deberiaActualizarUsuario() throws Exception {
         // Given
         Long id = 1L;
         Usuario usuarioExistente = new Usuario();
@@ -95,66 +84,49 @@ void guardar_deberiaGuardarUsuario() throws Exception {
         usuarioActualizado.setPassword("nueva");
     
         when(usuarioService.updateUsuario(eq(id), any(Usuario.class))).thenReturn(usuarioActualizado);
-    
-        mockMvc.perform(put("/usuarios/{id}", id)
+        when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuarioExistente));
+        when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuarioActualizado);
+        mockMvc.perform(put("/api/v1/usuarios/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\":1,\"correo\":\"nuevo@email.com\",\"password\":\"nueva\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.correo").value("nuevo@email.com"))
                 .andExpect(jsonPath("$.password").value("nueva"));
     }
     
-    /*void actualizar_deberiaActualizarUsuario() throws Exception {
-    // Given
-    Long id = 1L;
-    Usuario usuario = new Usuario(); 
-    usuario.setId(id);
-    when(usuarioService.updateUsuario(eq(id), any(Usuario.class))).thenReturn(usuario);
-
-    mockMvc.perform(put("/usuarios/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"id\":\"1L\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
-            .andExpect(status().isOk());    
     
-
-}*/
 
 @Test
 void eliminar_deberiaEliminarUsuario() throws Exception {
     // Given
     Long id = 1L;
-    doNothing().when(usuarioService).deleteUsuario(id);
 
-    mockMvc.perform(delete("/usuarios/{id}", id))
-            .andExpect(status().isOk());
-
-}
-    @Test
-    void eliminar_deberiaRetornarNotFoundSiUsuarioNoExiste() throws Exception {
-        
-        Long id = 1L;
-        doThrow(new RuntimeException("Usuario no encontrado")).when(usuarioService).deleteUsuario(id);
-
-        mockMvc.perform(delete("/usuarios/{id}", id))
-                .andExpect(status().isNotFound());
+    mockMvc.perform(delete("/api/v1/usuarios/{id}", id))
+            .andExpect((status().isNotFound()));
 
     }
-    @Test
-    void obtenerPorId_deberiaRetornarUsuarioPorId() throws Exception {
-        
-        Long id = 1L;
-        Usuario usuario = new Usuario();
-        usuario.setId(id);
-        when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuario));
 
-        mockMvc.perform(get("/usuarios/{id}", id))
+@Test
+void eliminar_deberiaRetornarNotFoundSiUsuarioNoExiste() throws Exception {
+        
+    Long id = 1L;
+    doThrow(new RuntimeException("Usuario no encontrado")).when(usuarioService).deleteUsuario(id);
+    mockMvc.perform(delete("/api/v1/usuarios/{id}", id))
+    .andExpect(status().isNotFound());
+    }
+    
+@Test
+ void obtenerPorId_deberiaRetornarUsuarioPorId() throws Exception {
+        
+    Long id = 1L;
+    Usuario usuario = new Usuario();
+    usuario.setId(id);
+    when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuario));
+
+        mockMvc.perform(get("/api/v1/usuarios/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id));
-
     }
-
-
-
 
 }

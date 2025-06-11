@@ -8,7 +8,6 @@ import prueba.com.prueba.dto.UsuarioDTO;
 import prueba.com.prueba.dto.UsuarioDTOConverter;
 import prueba.com.prueba.dto.VentaDTO;
 import prueba.com.prueba.model.Usuario;
-import prueba.com.prueba.repository.UsuarioRepository;
 import prueba.com.prueba.service.UsuarioService;
 import prueba.com.prueba.service.VentaClientService;
 
@@ -72,7 +71,7 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
         usuarioService.deleteUsuario(id);
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/ventas")
