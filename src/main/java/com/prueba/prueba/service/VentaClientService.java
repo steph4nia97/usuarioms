@@ -1,8 +1,9 @@
-package prueba.com.prueba.service;
+package com.prueba.prueba.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import prueba.com.prueba.dto.VentaDTO;
+
+import com.prueba.prueba.dto.VentaDTO;
 
 import java.util.Arrays;
 import java.util.List;

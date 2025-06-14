@@ -1,4 +1,4 @@
-package prueba.com.prueba.controller;
+package com.prueba.prueba.controller;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,12 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import prueba.com.prueba.dto.UsuarioDTOConverter;
-import prueba.com.prueba.model.Usuario;
-import prueba.com.prueba.service.UsuarioService;
-import prueba.com.prueba.service.VentaClientService;
 
+import com.prueba.prueba.dto.UsuarioDTOConverter;
+import com.prueba.prueba.model.Usuario;
+import com.prueba.prueba.service.UsuarioService;
+import com.prueba.prueba.service.VentaClientService;
 
 
 @WebMvcTest(UsuarioController.class)

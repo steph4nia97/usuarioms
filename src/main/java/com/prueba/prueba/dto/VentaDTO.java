@@ -1,4 +1,4 @@
-package prueba.com.prueba.dto;
+package com.prueba.prueba.dto;
 
 import lombok.Data;
 

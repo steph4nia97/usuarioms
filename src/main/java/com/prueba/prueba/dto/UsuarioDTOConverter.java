@@ -1,7 +1,9 @@
-package prueba.com.prueba.dto;
+package com.prueba.prueba.dto;
 
 import org.springframework.stereotype.Component;
-import prueba.com.prueba.model.Usuario;
+
+import com.prueba.prueba.model.Usuario;
+
 
 @Component
 public class UsuarioDTOConverter {

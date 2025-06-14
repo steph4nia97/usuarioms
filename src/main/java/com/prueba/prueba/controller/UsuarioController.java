@@ -1,15 +1,20 @@
-package prueba.com.prueba.controller;
+package com.prueba.prueba.controller;
+
 import lombok.RequiredArgsConstructor;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import prueba.com.prueba.dto.UsuarioDTO;
-import prueba.com.prueba.dto.UsuarioDTOConverter;
-import prueba.com.prueba.dto.VentaDTO;
-import prueba.com.prueba.model.Usuario;
-import prueba.com.prueba.service.UsuarioService;
-import prueba.com.prueba.service.VentaClientService;
+
+import com.prueba.prueba.assambler.AssamblerUsuario;
+import com.prueba.prueba.dto.UsuarioDTO;
+import com.prueba.prueba.dto.UsuarioDTOConverter;
+import com.prueba.prueba.dto.VentaDTO;
+import com.prueba.prueba.model.Usuario;
+import com.prueba.prueba.service.UsuarioService;
+import com.prueba.prueba.service.VentaClientService;
 
 import java.util.List;
 import java.util.Optional;

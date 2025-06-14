@@ -1,9 +1,13 @@
-package prueba.com.prueba.service;
+package com.prueba.prueba.service;
+
+
+
+import org.springframework.stereotype.Service;
+
+import com.prueba.prueba.model.Usuario;
+import com.prueba.prueba.repository.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import prueba.com.prueba.model.Usuario;
-import prueba.com.prueba.repository.UsuarioRepository;
 
 import java.util.List;
 import java.util.Optional;
