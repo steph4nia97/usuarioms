@@ -1,10 +1,10 @@
 package com.prueba.prueba.controller;
 
 import lombok.RequiredArgsConstructor;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +27,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final UsuarioDTOConverter usuarioDTOConverter;
     private final VentaClientService ventaClientService;
+    private final AssamblerUsuario assamblerUsuario;
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @GetMapping("/status")
@@ -35,7 +36,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioDTO>>> getAllUsuarios() {
         List<UsuarioDTO> usuarios = usuarioService.getAllUsuarios()
             .stream()
             .map(usuarioDTOConverter::convertToDTO)
@@ -43,31 +44,41 @@ public class UsuarioController {
         if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(usuarios);
+        List<EntityModel<UsuarioDTO>> usuariosModel = usuarios.stream()
+            .map(assamblerUsuario::toModel)
+            .toList();
+        return ResponseEntity.ok(CollectionModel.of(usuariosModel));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<UsuarioDTO>> getUsuarioById(@PathVariable Long id) {
         logger.info("Fetching usuario with id: {}", id);
         Optional<Usuario> usuario = usuarioService.getUsuarioById(id);
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return usuario
+            .map(u -> usuarioDTOConverter.convertToDTO(u))
+            .map(assamblerUsuario::toModel)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<EntityModel<UsuarioDTO>> createUsuario(@RequestBody Usuario usuario) {
         Usuario createdUsuario = usuarioService.saveUsuario(usuario);
-        return ResponseEntity.status(201).body(createdUsuario);
+        UsuarioDTO dto = usuarioDTOConverter.convertToDTO(createdUsuario);
+        EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
+        return ResponseEntity.status(201).body(model);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<EntityModel<UsuarioDTO>> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         if (!usuarioService.getUsuarioById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
         usuario.setId(id);
         Usuario updatedUsuario = usuarioService.saveUsuario(usuario);
-        return ResponseEntity.accepted().body(updatedUsuario);
+        UsuarioDTO dto = usuarioDTOConverter.convertToDTO(updatedUsuario);
+        EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
+        return ResponseEntity.accepted().body(model);
     }
 
     @DeleteMapping("/{id}")
@@ -76,7 +87,7 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
         usuarioService.deleteUsuario(id);
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/ventas")

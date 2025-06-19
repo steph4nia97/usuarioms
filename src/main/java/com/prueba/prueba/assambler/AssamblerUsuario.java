@@ -18,9 +18,9 @@ public class AssamblerUsuario implements RepresentationModelAssembler<UsuarioDTO
     public EntityModel<UsuarioDTO> toModel(UsuarioDTO dto) {
         return EntityModel.of(dto,
                         linkTo(methodOn(UsuarioController.class).getUsuarioById(dto.getId())).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).getAllUsuarios()).withRel("tickets"),
-                linkTo(methodOn(UsuarioController.class).updateUsuario(dto.getId(), null)).withRel("update"),
-                linkTo(methodOn(UsuarioController.class).deleteUsuario(dto.getId())).withRel("delete")
+                linkTo(methodOn(UsuarioController.class).getAllUsuarios()).withRel("todos los usuarios"),
+                linkTo(methodOn(UsuarioController.class).updateUsuario(dto.getId(), null)).withRel("actualizar usuario"),
+                linkTo(methodOn(UsuarioController.class).deleteUsuario(dto.getId())).withRel("eliminar usuario")
         );
  
     }
