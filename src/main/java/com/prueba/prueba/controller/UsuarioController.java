@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.prueba.prueba.assambler.AssamblerUsuario;
+import com.prueba.prueba.dto.UsuarioCreateDTO;
 import com.prueba.prueba.dto.UsuarioDTO;
 import com.prueba.prueba.dto.UsuarioDTOConverter;
 import com.prueba.prueba.dto.VentaDTO;
@@ -61,25 +62,27 @@ public class UsuarioController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<EntityModel<UsuarioDTO>> createUsuario(@RequestBody Usuario usuario) {
-        Usuario createdUsuario = usuarioService.saveUsuario(usuario);
-        UsuarioDTO dto = usuarioDTOConverter.convertToDTO(createdUsuario);
-        EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
-        return ResponseEntity.status(201).body(model);
-    }
+@PostMapping
+public ResponseEntity<EntityModel<UsuarioDTO>> createUsuario(@RequestBody UsuarioCreateDTO usuarioCreateDTO) {
+    Usuario usuario = usuarioDTOConverter.convertToEntity(usuarioCreateDTO);
+    Usuario createdUsuario = usuarioService.saveUsuario(usuario);
+    UsuarioDTO dto = usuarioDTOConverter.convertToDTO(createdUsuario);
+    EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
+    return ResponseEntity.status(201).body(model);
+}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<UsuarioDTO>> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        if (!usuarioService.getUsuarioById(id).isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        usuario.setId(id);
-        Usuario updatedUsuario = usuarioService.saveUsuario(usuario);
-        UsuarioDTO dto = usuarioDTOConverter.convertToDTO(updatedUsuario);
-        EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
-        return ResponseEntity.accepted().body(model);
+@PutMapping("/{id}")
+public ResponseEntity<EntityModel<UsuarioDTO>> updateUsuario(@PathVariable Long id, @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
+    if (!usuarioService.getUsuarioById(id).isPresent()) {
+        return ResponseEntity.notFound().build();
     }
+    Usuario usuario = usuarioDTOConverter.convertToEntity(usuarioCreateDTO);
+    usuario.setId(id);
+    Usuario updatedUsuario = usuarioService.saveUsuario(usuario);
+    UsuarioDTO dto = usuarioDTOConverter.convertToDTO(updatedUsuario);
+    EntityModel<UsuarioDTO> model = assamblerUsuario.toModel(dto);
+    return ResponseEntity.accepted().body(model);
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {

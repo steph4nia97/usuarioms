@@ -3,7 +3,7 @@ package com.prueba.prueba.dto;
 import org.springframework.stereotype.Component;
 
 import com.prueba.prueba.model.Usuario;
-
+import com.prueba.prueba.dto.UsuarioCreateDTO;
 
 @Component
 public class UsuarioDTOConverter {
@@ -17,10 +17,9 @@ public class UsuarioDTOConverter {
                 .build();
     }
 
-    public Usuario convertToEntity(UsuarioDTO usuarioDTO) {
+    public Usuario convertToEntity(UsuarioCreateDTO usuarioDTO) {
         if (usuarioDTO == null) return null;
         Usuario usuario = new Usuario();
-        usuario.setId(usuarioDTO.getId());
         usuario.setCorreo(usuarioDTO.getCorreo());
         usuario.setPassword(usuarioDTO.getPassword());
         return usuario;
