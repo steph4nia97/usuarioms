@@ -13,9 +13,9 @@ public class Swagger {
     public OpenAPI customOpenApi (){
         return new OpenAPI()
                 .info(new Info()
-                        .title("API 2025 Gestión Tickets Best Support")
+                        .title("API 2025 Gestión Usuario Best Support")
                         .version("1.0")
-                        .description("Documentación de la API para el sistema de gestión de tickets BEST SUPPORT.")
+                        .description("Documentación de la API para el sistema de gestión de Micro Servicio : Usuario.")
                         .contact(
                                 new Contact()
                                         .name("Stephania Muñoz")

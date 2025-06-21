@@ -59,45 +59,66 @@ void guardar_deberiaGuardarUsuario() throws Exception {
     usuario.setId(1L);
     usuario.setCorreo("juan@email.com");
     usuario.setPassword("123");
-    when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
 
+    UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+            .id(1L)
+            .correo("juan@email.com")
+            .password("123")
+            .build();
+
+    
+    when(usuarioDTOConverter.convertToEntity(any())).thenReturn(usuario);
+    when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuario);
+    when(usuarioDTOConverter.convertToDTO(any(Usuario.class))).thenReturn(usuarioDTO);
+    when(assamblerUsuario.toModel(any(UsuarioDTO.class))).thenReturn(EntityModel.of(usuarioDTO));
+
+    // No envíes el id en el JSON de entrada
     mockMvc.perform(post("/api/v1/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"id\":\"1\",\"correo\":\"juan@email.com\",\"password\":\"123\"}"))
+            .content("{\"correo\":\"juan@email.com\",\"password\":\"123\"}")) //no le envio el id xq es autoincremental
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.correo").value("juan@email.com"))
             .andExpect(jsonPath("$.password").value("123"));
-    }
+}
 
 
     
 @Test
 void actualizar_deberiaActualizarUsuario() throws Exception {
-        // Given
-        Long id = 1L;
-        Usuario usuarioExistente = new Usuario();
-        usuarioExistente.setId(id);
-        usuarioExistente.setCorreo("viejo@email.com");
-        usuarioExistente.setPassword("antigua");
-    
-        // Usuario actualizado (lo que retorna el servicio)
-        Usuario usuarioActualizado = new Usuario();
-        usuarioActualizado.setId(id);
-        usuarioActualizado.setCorreo("nuevo@email.com");
-        usuarioActualizado.setPassword("nueva");
-    
-        when(usuarioService.updateUsuario(eq(id), any(Usuario.class))).thenReturn(usuarioActualizado);
-        when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuarioExistente));
-        when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuarioActualizado);
-        mockMvc.perform(put("/api/v1/usuarios/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\":1,\"correo\":\"nuevo@email.com\",\"password\":\"nueva\"}"))
-                .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.correo").value("nuevo@email.com"))
-                .andExpect(jsonPath("$.password").value("nueva"));
-    }
+    // Given
+    Long id = 1L;
+    Usuario usuarioExistente = new Usuario();
+    usuarioExistente.setId(id);
+    usuarioExistente.setCorreo("viejo@email.com");
+    usuarioExistente.setPassword("antigua");
+
+    Usuario usuarioActualizado = new Usuario();
+    usuarioActualizado.setId(id);
+    usuarioActualizado.setCorreo("nuevo@email.com");
+    usuarioActualizado.setPassword("nueva");
+
+    UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+            .id(id)
+            .correo("nuevo@email.com")
+            .password("nueva")
+            .build();
+
+    when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuarioExistente));
+    when(usuarioDTOConverter.convertToEntity(any())).thenReturn(usuarioActualizado);
+    when(usuarioService.saveUsuario(any(Usuario.class))).thenReturn(usuarioActualizado);
+    when(usuarioDTOConverter.convertToDTO(any(Usuario.class))).thenReturn(usuarioDTO);
+    when(assamblerUsuario.toModel(any(UsuarioDTO.class))).thenReturn(EntityModel.of(usuarioDTO));
+
+    // No envíes el id en el JSON de entrada
+    mockMvc.perform(put("/api/v1/usuarios/{id}", id)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"correo\":\"nuevo@email.com\",\"password\":\"nueva\"}"))
+            .andExpect(status().isAccepted())
+            .andExpect(jsonPath("$.id").value(1L))
+            .andExpect(jsonPath("$.correo").value("nuevo@email.com"))
+            .andExpect(jsonPath("$.password").value("nueva"));
+}
     
     
 
@@ -121,16 +142,28 @@ void eliminar_deberiaRetornarNotFoundSiUsuarioNoExiste() throws Exception {
     }
     
 @Test
- void obtenerPorId_deberiaRetornarUsuarioPorId() throws Exception {
-        
+void obtenerPorId_deberiaRetornarUsuarioPorId() throws Exception {
     Long id = 1L;
     Usuario usuario = new Usuario();
     usuario.setId(id);
+    usuario.setCorreo("juan@email.com");
+    usuario.setPassword("123");
+
+    UsuarioDTO usuarioDTO = UsuarioDTO.builder()
+            .id(id)
+            .correo("juan@email.com")
+            .password("123")
+            .build();
+
+    // Mock converter y assembler
     when(usuarioService.getUsuarioById(id)).thenReturn(Optional.of(usuario));
+    when(usuarioDTOConverter.convertToDTO(usuario)).thenReturn(usuarioDTO);
+    when(assamblerUsuario.toModel(usuarioDTO)).thenReturn(EntityModel.of(usuarioDTO));
 
-        mockMvc.perform(get("/api/v1/usuarios/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id));
-    }
-
+    mockMvc.perform(get("/api/v1/usuarios/{id}", id))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(id))
+            .andExpect(jsonPath("$.correo").value("juan@email.com"))
+            .andExpect(jsonPath("$.password").value("123"));
+}
 }
